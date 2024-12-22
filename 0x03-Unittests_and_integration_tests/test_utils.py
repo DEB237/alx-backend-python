@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 from unittest.mock import patch, Mock
 from utils import get_json  # Assuming get_json is implemented in utils.py
