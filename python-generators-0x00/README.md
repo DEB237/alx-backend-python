@@ -1,2 +1,0 @@
-# Python Generators
-Using generators
