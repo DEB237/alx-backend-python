@@ -3,6 +3,7 @@ from unittest.mock import patch, Mock
 from parameterized import parameterized
 from client import GithubOrgClient  # Assuming GithubOrgClient is defined in client.py
 
+
 class TestGithubOrgClient(unittest.TestCase):
     """Test class for GithubOrgClient."""
 
@@ -26,7 +27,9 @@ class TestGithubOrgClient(unittest.TestCase):
         result = client.org()
 
         # Assert that get_json was called once with the correct URL
-        mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
+        mock_get_json.assert_called_once_with(
+            f"https://api.github.com/orgs/{org_name}"
+        )
 
         # Assert that the returned result matches the mock response
         self.assertEqual(result, mock_response.json.return_value)
@@ -50,7 +53,9 @@ class TestGithubOrgClient(unittest.TestCase):
         result = client.public_repos()
 
         # Assert that get_json was called once with the correct URL for public repos
-        mock_get_json.assert_called_once_with("https://api.github.com/orgs/google/repos")
+        mock_get_json.assert_called_once_with(
+            "https://api.github.com/orgs/google/repos"
+        )
 
         # Assert that the result matches the mock response
         self.assertEqual(result, mock_response.json.return_value)
@@ -79,7 +84,11 @@ class TestGithubOrgClient(unittest.TestCase):
         )
 
         # Assert that the result matches the mock response
-        self.assertEqual(result, [repo for repo in mock_response.json.return_value if repo['license']['key'] == "apache-2.0"])
+        self.assertEqual(result, [
+            repo for repo in mock_response.json.return_value
+            if repo['license']['key'] == "apache-2.0"
+        ])
+
 
 if __name__ == "__main__":
     unittest.main()
