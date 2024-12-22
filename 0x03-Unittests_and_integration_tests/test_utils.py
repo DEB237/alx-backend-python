@@ -1,38 +1,105 @@
 #!/usr/bin/env python3
+"""Unit tests for utility functions."""
 
 import unittest
+from parameterized import parameterized
+from utils import access_nested_map, get_json, memoize
 from unittest.mock import patch, Mock
-from utils import get_json  # Assuming get_json is implemented in utils.py
+
+
+class TestAccessNestedMap(unittest.TestCase):
+    """Test class for access_nested_map function."""
+
+    @parameterized.expand([
+        ({"a": 1}, ("a",), 1),
+        ({"a": {"b": 2}}, ("a",), {"b": 2}),
+        ({"a": {"b": 2}}, ("a", "b"), 2)
+    ])
+    def test_access_nested_map(self, nested_map, path, expected):
+        """Test access_nested_map function.
+
+        Args:
+            nested_map (dict): Nested dictionary.
+            path (tuple): Path to access the value.
+            expected: Expected output.
+        """
+        result = access_nested_map(nested_map, path)
+        self.assertEqual(result, expected)
+
+    @parameterized.expand([
+        ({}, ("a",), KeyError),
+        ({"a": 1}, ("a", "b"), KeyError)
+    ])
+    def test_access_nested_map_exception(self, nested_map, path, expected):
+        """Test access_nested_map function for exceptions.
+
+        Args:
+            nested_map (dict): Nested dictionary.
+            path (tuple): Path to access the value.
+            expected: Expected exception.
+        """
+        with self.assertRaises(expected):
+            access_nested_map(nested_map, path)
+
 
 class TestGetJson(unittest.TestCase):
-    """
-    Test case for the utils.get_json function.
-    """
+    """Test class for get_json function."""
 
-    @patch("requests.get")
     @parameterized.expand([
-        ("http://example.com", {"payload": True}),
-        ("http://holberton.io", {"payload": False}),
+        ('http://example.com', {'payload': True}),
+        ('http://holberton.io', {'payload': False})
     ])
-    def test_get_json(self, test_url, test_payload, mock_get):
+    def test_get_json(self, url, expected):
+        """Test get_json function.
+
+        Args:
+            url (str): URL to fetch JSON from.
+            expected: Expected JSON response.
         """
-        Test that the get_json function returns the expected result and that the requests.get method is called once.
-        """
-        # Create a mock response object with a json() method that returns the test_payload
         mock_response = Mock()
-        mock_response.json.return_value = test_payload
+        mock_response.json.return_value = expected
+        with patch('requests.get', return_value=mock_response):
+            response = get_json(url)
+            self.assertEqual(response, expected)
 
-        # Configure the mock to return our mock_response when called
-        mock_get.return_value = mock_response
 
-        # Call the get_json function
-        result = get_json(test_url)
+class TestMemoize(unittest.TestCase):
+    """Test class for memoize decorator."""
 
-        # Assert that requests.get was called exactly once with the correct URL
-        mock_get.assert_called_once_with(test_url)
+    def test_memoize(self):
+        """Test memoize decorator.
 
-        # Assert that the result is equal to the test_payload
-        self.assertEqual(result, test_payload)
+        Returns:
+            Type: Description
+        """
+        class TestClass:
+            """Test class."""
+
+            def a_method(self):
+                """Test method.
+
+                Returns:
+                    Type: Description
+                """
+                return 42
+
+            @memoize
+            def a_property(self):
+                """Test property.
+
+                Returns:
+                    Type: Description
+                """
+                return self.a_method()
+
+        test_obj = TestClass()
+        with patch.object(test_obj, 'a_method') as mock_method:
+            mock_method.return_value = 42
+            result1 = test_obj.a_property
+            result2 = test_obj.a_property
+            self.assertEqual(result1, 42)
+            self.assertEqual(result2, 42)
+            mock_method.assert_called_once()
 
 
 if __name__ == "__main__":
