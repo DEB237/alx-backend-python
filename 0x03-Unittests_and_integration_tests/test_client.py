@@ -17,7 +17,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
         # Create a mock response object for the get_json method
         mock_response = Mock()
-        mock_response.json.return_value = {"login": org_name, "id": 12345}  # Mocked response
+        mock_response.json.return_value = {"login": org_name, "id": 12345}
         mock_get_json.return_value = mock_response
 
         # Create an instance of GithubOrgClient
