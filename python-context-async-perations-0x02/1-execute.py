@@ -56,9 +56,9 @@ class ExecuteQuery:
 
 # Database connection parameters
 host = "localhost"
-user = "root"  # Replace with MySQL username
-password = "password"  # Replace with  MySQL password
-database = "ALX_prodev"  # Replace with database name
+user = "root"  # Replace with your MySQL username
+password = "password"  # Replace with your MySQL password
+database = "ALX_prodev"  # Replace with your database name
 
 # Query and parameters
 query = "SELECT * FROM users WHERE age > %s"
