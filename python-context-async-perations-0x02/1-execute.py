@@ -52,3 +52,20 @@ class ExecuteQuery:
             print("Database connection closed.")
         if exc_type:
             print(f"An exception occurred: {exc_value}")
+
+
+# Database connection parameters
+host = "localhost"
+user = "root"  # Replace with MySQL username
+password = "password"  # Replace with  MySQL password
+database = "ALX_prodev"  # Replace with database name
+
+# Query and parameters
+query = "SELECT * FROM users WHERE age > %s"
+params = (25,)
+
+# Using the ExecuteQuery context manager
+with ExecuteQuery(host, user, password, database, query, params) as executor:
+    results = executor.execute()
+    for row in results:
+        print(row)
