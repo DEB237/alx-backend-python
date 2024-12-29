@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     """
-    Custom User model extending the AbstractUser for additional fields.
+    Custom User model extending AbstractUser.
     """
     bio = models.TextField(null=True, blank=True)
 
