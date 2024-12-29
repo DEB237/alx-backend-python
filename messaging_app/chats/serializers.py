@@ -27,15 +27,22 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class ConversationSerializer(serializers.ModelSerializer):
     """
-    Serializer for the Conversation model with nested messages.
+    Serializer for the Conversation model with nested messages and dynamic fields.
     """
     conversation_id = serializers.CharField(read_only=True)
     participants = UserSerializer(many=True, read_only=True)
     messages = MessageSerializer(many=True, read_only=True)
+    total_messages = serializers.SerializerMethodField()
 
     class Meta:
         model = Conversation
-        fields = ['conversation_id', 'participants', 'messages', 'created_at']
+        fields = ['conversation_id', 'participants', 'messages', 'total_messages', 'created_at']
+
+    def get_total_messages(self, obj):
+        """
+        Compute the total number of messages in the conversation.
+        """
+        return obj.messages.count()
 
     def validate(self, data):
         """
