@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from .models import Message
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
 def delete_user(request):
@@ -19,10 +20,12 @@ def message_list(request):
     """
     Fetch and display messages sent or received by the authenticated user with optimized queries.
     """
-    messages = Message.objects.filter(
-        sender=request.user
-    ).select_related('receiver', 'sender').prefetch_related('replies')
-
+   @method_decorator(cache_page(60), name='dispatch')
+def message_list(request):
+    """
+    Fetch and display messages in a conversation with caching enabled.
+    """
+    messages = Message.objects.filter(conversation=conversation).select_related('sender', 'receiver')
     return render(request, 'messaging/message_list.html', {'messages': messages})
 
 def message_replies(request, message_id):
