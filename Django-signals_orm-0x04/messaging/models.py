@@ -30,3 +30,24 @@ class MessageHistory(models.Model):
 
     def __str__(self):
         return f"History of Message {self.message.id} (Edited by {self.edited_by})"
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name="received_messages", on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    parent_message = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
+    )  # Self-referential field for threaded replies
+
+    def __str__(self):
+        return f"Message from {self.sender} to {self.receiver}"
+
+    def get_all_replies(self):
+        """
+        Recursively fetch all replies to this message.
+        """
+        replies = list(self.replies.all())
+        for reply in self.replies.all():
+            replies.extend(reply.get_all_replies())
+        return replies
