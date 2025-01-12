@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from .models import Message
+from django.views.decorators.cache import cache_page
 
 def delete_user(request):
     """
