@@ -1,0 +1,7 @@
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+
+def delete_user(request):
+    user = request.user
+    user.delete()
+    return JsonResponse({"message": "User deleted successfully"})
