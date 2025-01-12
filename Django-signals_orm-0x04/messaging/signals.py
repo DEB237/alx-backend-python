@@ -9,10 +9,19 @@ def create_notification(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=User)
 def delete_user_related_data(sender, instance, **kwargs):
-    instance.sent_messages.all().delete()
-    instance.received_messages.all().delete()
-    instance.notification_set.all().delete()
+    """
+    Deletes all messages, notifications, and message histories associated with the user.
+    """
+    # Delete messages sent or received by the user
+    Message.objects.filter(sender=instance).delete()
+    Message.objects.filter(receiver=instance).delete()
 
+    # Delete notifications associated with the user
+    Notification.objects.filter(user=instance).delete()
+
+    # Delete message history linked to the user's messages
+    MessageHistory.objects.filter(message__sender=instance).delete()
+    MessageHistory.objects.filter(message__receiver=instance).delete()
 @receiver(pre_save, sender=Message)
 def log_message_edit(sender, instance, **kwargs):
     if instance.pk:  # Check if the message already exists
