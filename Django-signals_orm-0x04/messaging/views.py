@@ -31,3 +31,10 @@ def message_replies(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     replies = message.get_all_replies()  # Recursive fetching of replies
     return render(request, 'messaging/message_replies.html', {'message': message, 'replies': replies})
+
+def unread_messages(request):
+    """
+    Display unread messages for the authenticated user.
+    """
+    unread_messages = Message.unread.unread_for_user(request.user).only('sender', 'content', 'timestamp')
+    return render(request, 'messaging/unread_messages.html', {'unread_messages': unread_messages})
