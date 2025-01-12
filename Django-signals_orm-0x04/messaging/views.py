@@ -16,9 +16,12 @@ def delete_user(request):
 
 def message_list(request):
     """
-    Fetch and display messages with optimized queries.
+    Fetch and display messages sent or received by the authenticated user with optimized queries.
     """
-    messages = Message.objects.select_related('sender', 'receiver').prefetch_related('replies')
+    messages = Message.objects.filter(
+        sender=request.user
+    ).select_related('receiver', 'sender').prefetch_related('replies')
+
     return render(request, 'messaging/message_list.html', {'messages': messages})
 
 def message_replies(request, message_id):
